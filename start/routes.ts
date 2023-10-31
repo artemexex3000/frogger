@@ -21,15 +21,36 @@
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', 'PostsController.index')
+Route.on('/').redirectToPath('posts')
 
-Route.post('/factory', "PostsController.factory")
+Route
+  .resource('register', 'RegistrationController')
+  .only(['index', 'store'])
 
-Route.get('/register', 'RegistrationController.index').as('user.index')
-Route.post('/register/add', 'RegistrationController.store').as('user.store')
+Route
+  .resource('posts', 'PostsController')
+  .except(['create', 'edit'])
+  .middleware({
+    store: ['auth'],
+    update: ['auth'],
+    destroy: ['auth']
+  })
+
+Route
+  .resource('comments', 'CommentsController')
+  .except(['create', 'update'])
+
+
+
+
+
+
+
 
 Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
 
   return report.healthy ? response.ok(report) : response.badRequest(report)
 })
+
+Route.post('/factory', "RegistrationController.factory")

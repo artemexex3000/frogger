@@ -1,17 +1,11 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'posts'
+  protected tableName = 'comments'
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id').primary()
-      table
-        .integer('category_id')
-        .unsigned()
-        .notNullable()
-        .references('categories.id')
-        .onDelete('CASCADE')
+      table.increments('id')
       table
         .integer('user_id')
         .unsigned()
@@ -19,22 +13,14 @@ export default class extends BaseSchema {
         .references('users.id')
         .onDelete('CASCADE')
       table
-        .string('slug')
+        .integer('post_id')
+        .unsigned()
         .notNullable()
-        .unique()
+        .references('posts.id')
+        .onDelete('CASCADE')
       table
-        .string('title')
+        .string('body')
         .notNullable()
-      table
-        .text('excerpt')
-        .notNullable()
-      table
-        .text('body')
-        .notNullable()
-      table
-        .string('thumbnail')
-        .nullable()
-      
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */

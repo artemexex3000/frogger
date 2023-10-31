@@ -2,6 +2,7 @@ import Post from 'App/Models/Post'
 import Factory from '@ioc:Adonis/Lucid/Factory'
 import UserFactory from './UserFactory'
 import CategoryFactory from './CategoryFactory'
+import CommentFactory from './CommentFactory'
 
 export default Factory.define(Post, ({ faker }) => {
   return {
@@ -11,6 +12,7 @@ export default Factory.define(Post, ({ faker }) => {
     body: faker.lorem.paragraphs(),
   }
 })
-.relation('users', () => UserFactory)
-.relation('categories', () => CategoryFactory)
+.relation('user', () => UserFactory)
+.relation('category', () => CategoryFactory)
+.relation('comments', () => CommentFactory)
 .build()

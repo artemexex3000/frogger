@@ -1,6 +1,7 @@
 import User from "App/Models/User";
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import RegistrationValidator from "App/Validators/RegistrationValidator";
+import UserFactory from "Database/factories/UserFactory";
 
 export default class RegistrationController {
   public async index() {
@@ -14,7 +15,15 @@ export default class RegistrationController {
 
       return response.created(user)
     } catch (error) {
-      return response.created(error)
+      return response.abort(error)
     }
+  }
+
+  public async factory() {
+    return await UserFactory
+        .with('posts', 5, (post) => {
+          post.with('category')
+        })
+        .create()
   }
 }
