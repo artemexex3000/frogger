@@ -20,32 +20,57 @@
 
 import HealthCheck from '@ioc:Adonis/Core/HealthCheck'
 import Route from '@ioc:Adonis/Core/Route'
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
+/**
+ * 
+ * TODO: make middleware: auth, guest
+ * 
+ */
 
 Route.on('/').redirectToPath('posts')
 
 Route
   .resource('register', 'RegistrationController')
   .only(['index', 'store'])
+  .middleware({
+    store: ['guest'],
+    index: ['auth']
+  })
 
+Route.post('session/store', 'AuthController.store').middleware('guest')
+Route.post('session/destroy', 'AuthController.destroy').middleware('auth')
+
+
+/**
+ * 
+ * @param user_id
+ * @param categoryId
+ * @param slug
+ * @param title
+ * @param except
+ * @param body
+ * 
+ */
 Route
   .resource('posts', 'PostsController')
   .except(['create', 'edit'])
   .middleware({
-    store: ['auth'],
-    update: ['auth'],
-    destroy: ['auth']
+    store: ['admin'],
+    update: ['admin'],
+    destroy: ['admin']
   })
 
 Route
   .resource('comments', 'CommentsController')
-  .except(['create', 'update'])
+  .except(['create', 'edit', 'show'])
+  .middleware({
+    store: ['auth'],
+    update: ['auth'],
+    destroy: ['admin']
+  })
 
-
-
-
-
-
-
+/******************************/
 
 Route.get('health', async ({ response }) => {
   const report = await HealthCheck.getReport()
@@ -54,3 +79,7 @@ Route.get('health', async ({ response }) => {
 })
 
 Route.post('/factory', "RegistrationController.factory")
+
+Route.get('test', async (ctx: HttpContextContract) => {
+  return ctx.auth.use('api').isAuthenticated
+})

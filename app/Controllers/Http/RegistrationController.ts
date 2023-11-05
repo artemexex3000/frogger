@@ -8,14 +8,24 @@ export default class RegistrationController {
     return User.all()
   }
 
-  public async store({ request, response }: HttpContextContract) {
+  /**
+   * 
+   * @param username
+   * @param name
+   * @param email
+   * @param password
+   * @param password_confirmation
+   * @param is_admin // default = false
+   * 
+   */
+  public async store(ctx: HttpContextContract) {
     try {
-      const data = await request.validate(RegistrationValidator)
+      const data = await ctx.request.validate(RegistrationValidator)
       const user = await User.create(data)
 
-      return response.created(user)
+      return ctx.response.created(user)
     } catch (error) {
-      return response.abort(error)
+      return ctx.response.abort(error)
     }
   }
 
